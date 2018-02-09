@@ -1,4 +1,5 @@
 use std::ops::{Add, AddAssign, Mul};
+use scalar::Scalar;
 
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub struct Vec3<T> {
@@ -38,12 +39,12 @@ impl<T: Add<Output = T> + Copy> AddAssign for Vec3<T> {
     }
 }
 
-impl<T: Mul<Output = T> + Add<Output = T>> Mul for Vec3<T> {
-    type Output = T;
+impl<T: Add<Output = T> + Mul<Output = T>> Mul for Vec3<T> {
+    type Output = Scalar<T>;
 
-    /// Compute the dot product of two `Vec3`.
-    fn mul(self, rhs: Vec3<T>) -> T {
-        self.x * rhs.x + self.y * rhs.y + self.z * rhs.z
+    /// Compute dot product between two `Vec3`.
+    fn mul(self, rhs: Vec3<T>) -> Scalar<T> {
+        Scalar::new(self.x * rhs.x + self.y * rhs.y + self.z * rhs.z)
     }
 }
 
@@ -79,8 +80,8 @@ mod tests {
     #[test]
     fn dot_i32() {
         let a = Vec3::new(1, 1, 1);
-        let b = Vec3::new(2, 2, 2);
-        assert_eq!(a * b, 6);
+        let b = Vec3::new(1, 2, 3);
+        assert_eq!(a * b, Scalar::new(6));
     }
 
     #[test]
@@ -112,7 +113,7 @@ mod tests {
     #[test]
     fn dot_f64() {
         let a = Vec3::new(1.0, 1.0, 1.0);
-        let b = Vec3::new(2.0, 2.0, 2.0);
-        assert_eq!(a * b, 6.0);
+        let b = Vec3::new(1.0, 2.0, 3.0);
+        assert_eq!(a * b, Scalar::new(6.0));
     }
 }
