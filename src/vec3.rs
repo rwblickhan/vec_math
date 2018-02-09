@@ -8,6 +8,7 @@ pub struct Vec3<T> {
 }
 
 impl<T> Vec3<T> {
+    /// Create a new `Vec3`.
     pub fn new(x: T, y: T, z: T) -> Vec3<T> {
         Vec3 { x, y, z }
     }
@@ -16,6 +17,7 @@ impl<T> Vec3<T> {
 impl<T: Add<Output = T>> Add for Vec3<T> {
     type Output = Vec3<T>;
 
+    /// Add two `Vec3`.
     fn add(self, rhs: Vec3<T>) -> Vec3<T> {
         Vec3 {
             x: self.x + rhs.x,
@@ -26,6 +28,7 @@ impl<T: Add<Output = T>> Add for Vec3<T> {
 }
 
 impl<T: Add<Output = T> + Copy> AddAssign for Vec3<T> {
+    /// Add `rhs` to `self`.
     fn add_assign(&mut self, rhs: Vec3<T>) {
         *self = Vec3 {
             x: self.x + rhs.x,
@@ -35,10 +38,10 @@ impl<T: Add<Output = T> + Copy> AddAssign for Vec3<T> {
     }
 }
 
-// represents dot product
 impl<T: Mul<Output = T> + Add<Output = T>> Mul for Vec3<T> {
     type Output = T;
 
+    /// Compute the dot product of two `Vec3`.
     fn mul(self, rhs: Vec3<T>) -> T {
         self.x * rhs.x + self.y * rhs.y + self.z * rhs.z
     }
@@ -75,9 +78,9 @@ mod tests {
 
     #[test]
     fn dot_i32() {
-        let a = Vec3::new(1,1,1);
-        let b = Vec3::new(2,2,2);
-        assert_eq!(a*b, 6);
+        let a = Vec3::new(1, 1, 1);
+        let b = Vec3::new(2, 2, 2);
+        assert_eq!(a * b, 6);
     }
 
     #[test]
@@ -108,8 +111,8 @@ mod tests {
 
     #[test]
     fn dot_f64() {
-        let a = Vec3::new(1.0,1.0,1.0);
-        let b = Vec3::new(2.0,2.0,2.0);
-        assert_eq!(a*b, 6.0);
+        let a = Vec3::new(1.0, 1.0, 1.0);
+        let b = Vec3::new(2.0, 2.0, 2.0);
+        assert_eq!(a * b, 6.0);
     }
 }
