@@ -1,4 +1,7 @@
-
+# cargo
 /target/
 **/*.rs.bk
 Cargo.lock
+
+# ide
+.idea/
