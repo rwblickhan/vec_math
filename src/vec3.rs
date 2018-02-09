@@ -1,4 +1,4 @@
-use std::ops::{Add, AddAssign};
+use std::ops::{Add, AddAssign, Mul};
 
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub struct Vec3<T> {
@@ -35,6 +35,15 @@ impl<T: Add<Output = T> + Copy> AddAssign for Vec3<T> {
     }
 }
 
+// represents dot product
+impl<T: Mul<Output = T> + Add<Output = T>> Mul for Vec3<T> {
+    type Output = T;
+
+    fn mul(self, rhs: Vec3<T>) -> T {
+        self.x * rhs.x + self.y * rhs.y + self.z * rhs.z
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -65,6 +74,13 @@ mod tests {
     }
 
     #[test]
+    fn dot_i32() {
+        let a = Vec3::new(1,1,1);
+        let b = Vec3::new(2,2,2);
+        assert_eq!(a*b, 6);
+    }
+
+    #[test]
     fn equality_f64() {
         let a = Vec3::new(1.0, 2.0, 3.0);
         let b = Vec3::new(1.0, 2.0, 3.0);
@@ -88,5 +104,12 @@ mod tests {
         a += Vec3::new(1.0, 1.0, 1.0);
         let c = Vec3::new(2.0, 2.0, 2.0);
         assert_eq!(a, c);
+    }
+
+    #[test]
+    fn dot_f64() {
+        let a = Vec3::new(1.0,1.0,1.0);
+        let b = Vec3::new(2.0,2.0,2.0);
+        assert_eq!(a*b, 6.0);
     }
 }
