@@ -1,4 +1,4 @@
-use std::ops::{Add};
+use std::ops::{Add, AddAssign};
 
 #[derive(PartialEq, Debug)]
 pub struct Vec3<T> {
@@ -27,22 +27,21 @@ impl<T: Add<Output = T>> Add for Vec3<T> {
     }
 }
 
-// TODO fix this, not guaranteed that T is trivially copyable
-//impl<T: Add<Output=T>> AddAssign for Vec3<T> {
-//    fn add_assign(&mut self, rhs: Vec3<T>) {
-//        *self = Vec3 {
-//            x: self.x + rhs.x,
-//            y: self.y + rhs.y,
-//            z: self.z + rhs.z
-//        }
-//    }
-//}
+impl<T: Add<Output=T> + Copy> AddAssign for Vec3<T> {
+    fn add_assign(&mut self, rhs: Vec3<T>) {
+        *self = Vec3 {
+            x: self.x + rhs.x,
+            y: self.y + rhs.y,
+            z: self.z + rhs.z
+        }
+    }
+}
 
 #[cfg(test)]
 mod tests {
     use super::*;
     #[test]
-    fn equality() {
+    fn equality_i32() {
         let a = Vec3::new(1,2,3);
         let b = Vec3::new(1,2,3);
         assert_eq!(a,b);
@@ -51,10 +50,18 @@ mod tests {
     }
 
     #[test]
-    fn add() {
+    fn add_i32() {
         let a = Vec3::new(1,1,1);
         let b = Vec3::new(1,1,1);
         let c = Vec3::new(2,2,2);
         assert_eq!(a+b, c);
+    }
+
+    #[test]
+    fn add_assign_i32() {
+        let mut a = Vec3::new(1,1,1);
+        a += Vec3::new(1,1,1);
+        let c = Vec3::new(2,2,2);
+        assert_eq!(a,c);
     }
 }
