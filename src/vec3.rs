@@ -1,4 +1,6 @@
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
+use std::convert::From;
+use std::cmp::PartialOrd;
 
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub struct Vec3<T> {
@@ -7,11 +9,55 @@ pub struct Vec3<T> {
     pub z: T,
 }
 
-impl<T> Vec3<T> {
+impl<T: Copy + PartialOrd> Vec3<T>
+where
+    f64: From<T>,
+{
     /// Create a new `Vec3`.
     pub fn new(x: T, y: T, z: T) -> Vec3<T> {
         Vec3 { x, y, z }
     }
+
+    /// Compute magnitude.
+    pub fn magnitude(&self) -> f64 {
+        Vec3::l2_norm(self)
+    }
+
+    /// Compute l<sub>2</sub> norm.
+    ///
+    /// Note: May cause loss of precision.
+    pub fn l2_norm(&self) -> f64 {
+        (f64::from(self.x).powi(2) + f64::from(self.y).powi(2) + f64::from(self.z).powi(2)).sqrt()
+    }
+
+    // TODO fix the other norms
+    //    /// Compute l<sub>1</sub> norm.
+    //    pub fn l1_norm(&self) -> T {
+    //        if self.x < self.y {
+    //            if self.x < self.z {
+    //                self.x
+    //            }
+    //            self.z
+    //        }
+    //        if self.y < self.z {
+    //           self.y
+    //        }
+    //        self.z
+    //    }
+    //
+    //    /// Computer l<sub>infinity</sub> norm.
+    //    pub fn linf_norm(&self) -> T {
+    //        if self.x > self.y {
+    //            if self.x > self.z {
+    //                self.x
+    //            }
+    //            self.z
+    //        }
+    //        if self.y > self.z {
+    //            self.y
+    //        }
+    //        self.z
+    //    }
 }
 
 impl<T: Add<Output = T>> Add for Vec3<T> {
@@ -124,6 +170,7 @@ impl<T: Div<Output = T> + Copy> DivAssign<T> for Vec3<T> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
     #[test]
     fn equality_i32() {
         let a = Vec3::new(1, 2, 3);
@@ -205,6 +252,14 @@ mod tests {
     }
 
     #[test]
+    fn magnitude_i32() {
+        let a = Vec3::new(2, 2, 2);
+        let val: f64 = 2.0;
+        let expected = (val.powi(2) + val.powi(2) + val.powi(2)).sqrt();
+        assert_eq!(a.magnitude(), expected);
+    }
+
+    #[test]
     fn equality_f64() {
         let a = Vec3::new(1.0, 2.0, 3.0);
         let b = Vec3::new(1.0, 2.0, 3.0);
@@ -282,5 +337,13 @@ mod tests {
         a /= 2.0;
         let b = Vec3::new(1.0, 1.0, 1.0);
         assert_eq!(a, b);
+    }
+
+    #[test]
+    fn magnitude_f64() {
+        let a = Vec3::new(2.0, 2.0, 2.0);
+        let val: f64 = 2.0;
+        let expected = (val.powi(2) + val.powi(2) + val.powi(2)).sqrt();
+        assert_eq!(a.magnitude(), expected);
     }
 }
