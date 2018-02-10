@@ -1,4 +1,4 @@
-use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign};
+use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub struct Vec3<T> {
@@ -38,6 +38,30 @@ impl<T: Add<Output = T> + Copy> AddAssign for Vec3<T> {
     }
 }
 
+impl<T: Sub<Output = T>> Sub for Vec3<T> {
+    type Output = Vec3<T>;
+
+    /// Subtract two `Vec3`.
+    fn sub(self, rhs: Vec3<T>) -> Vec3<T> {
+        Vec3 {
+            x: self.x - rhs.x,
+            y: self.y - rhs.y,
+            z: self.z - rhs.z,
+        }
+    }
+}
+
+impl<T: Sub<Output = T> + Copy> SubAssign for Vec3<T> {
+    /// Subtract `rhs` from `self`.
+    fn sub_assign(&mut self, rhs: Vec3<T>) {
+        *self = Vec3 {
+            x: self.x - rhs.x,
+            y: self.y - rhs.y,
+            z: self.z - rhs.z,
+        }
+    }
+}
+
 impl<T: Add<Output = T> + Mul<Output = T>> Mul<Vec3<T>> for Vec3<T> {
     type Output = T;
 
@@ -61,6 +85,7 @@ impl<T: Mul<Output = T> + Copy> Mul<T> for Vec3<T> {
 }
 
 impl<T: Mul<Output = T> + Copy> MulAssign<T> for Vec3<T> {
+    /// Multiply a `Vec3` by a scalar.
     fn mul_assign(&mut self, rhs: T) {
         *self = Vec3 {
             x: self.x * rhs,
@@ -85,7 +110,9 @@ impl<T: Div<Output = T> + Copy> Div<T> for Vec3<T> {
 }
 
 impl<T: Div<Output = T> + Copy> DivAssign<T> for Vec3<T> {
+    /// Divide a `Vec3` by a scalar.
     fn div_assign(&mut self, rhs: T) {
+        // TODO deal with divide-by-zero/NaN
         *self = Vec3 {
             x: self.x / rhs,
             y: self.y / rhs,
@@ -120,6 +147,23 @@ mod tests {
         let mut a = Vec3::new(1, 1, 1);
         a += Vec3::new(1, 1, 1);
         let c = Vec3::new(2, 2, 2);
+        assert_eq!(a, c);
+    }
+
+    #[test]
+    fn sub_i32() {
+        let a = Vec3::new(1, 1, 1);
+        let b = Vec3::new(1, 1, 1);
+        let c = Vec3::new(0, 0, 0);
+        assert_eq!(a - b, c);
+        assert_ne!(a - b, a);
+    }
+
+    #[test]
+    fn sub_assign_i32() {
+        let mut a = Vec3::new(1, 1, 1);
+        a -= Vec3::new(1, 1, 1);
+        let c = Vec3::new(0, 0, 0);
         assert_eq!(a, c);
     }
 
@@ -183,6 +227,23 @@ mod tests {
         let mut a = Vec3::new(1.0, 1.0, 1.0);
         a += Vec3::new(1.0, 1.0, 1.0);
         let c = Vec3::new(2.0, 2.0, 2.0);
+        assert_eq!(a, c);
+    }
+
+    #[test]
+    fn sub_f64() {
+        let a = Vec3::new(1.0, 1.0, 1.0);
+        let b = Vec3::new(1.0, 1.0, 1.0);
+        let c = Vec3::new(0.0, 0.0, 0.0);
+        assert_eq!(a - b, c);
+        assert_ne!(a - b, a);
+    }
+
+    #[test]
+    fn sub_assign_f64() {
+        let mut a = Vec3::new(1.0, 1.0, 1.0);
+        a -= Vec3::new(1.0, 1.0, 1.0);
+        let c = Vec3::new(0.0, 0.0, 0.0);
         assert_eq!(a, c);
     }
 
