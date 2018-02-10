@@ -1,4 +1,4 @@
-use std::ops::{Add, AddAssign, Mul};
+use std::ops::{Add, AddAssign, Div, Mul};
 
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub struct Vec3<T> {
@@ -60,6 +60,20 @@ impl<T: Mul<Output = T> + Copy> Mul<T> for Vec3<T> {
     }
 }
 
+impl<T: Div<Output = T> + Copy> Div<T> for Vec3<T> {
+    type Output = Vec3<T>;
+
+    /// Divide a `Vec3` by a scalar.
+    fn div(self, rhs: T) -> Vec3<T> {
+        // TODO deal with divide-by-zero/NaN
+        Vec3 {
+            x: self.x / rhs,
+            y: self.y / rhs,
+            z: self.z / rhs,
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -97,6 +111,20 @@ mod tests {
     }
 
     #[test]
+    fn mul_scalar_i32() {
+        let a = Vec3::new(1, 1, 1);
+        let b = Vec3::new(2, 2, 2);
+        assert_eq!(a * 2, b);
+    }
+
+    #[test]
+    fn div_scalar_i32() {
+        let a = Vec3::new(1, 1, 1);
+        let b = Vec3::new(2, 2, 2);
+        assert_eq!(b / 2, a);
+    }
+
+    #[test]
     fn equality_f64() {
         let a = Vec3::new(1.0, 2.0, 3.0);
         let b = Vec3::new(1.0, 2.0, 3.0);
@@ -127,5 +155,19 @@ mod tests {
         let a = Vec3::new(1.0, 1.0, 1.0);
         let b = Vec3::new(1.0, 2.0, 3.0);
         assert_eq!(a * b, 6.0);
+    }
+
+    #[test]
+    fn mul_scalar_f64() {
+        let a = Vec3::new(1.0, 1.0, 1.0);
+        let b = Vec3::new(2.0, 2.0, 2.0);
+        assert_eq!(a * 2.0, b);
+    }
+
+    #[test]
+    fn div_scalar_f64() {
+        let a = Vec3::new(1.0, 1.0, 1.0);
+        let b = Vec3::new(2.0, 2.0, 2.0);
+        assert_eq!(b / 2.0, a);
     }
 }
