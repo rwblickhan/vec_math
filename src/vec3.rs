@@ -1,20 +1,15 @@
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
-use std::convert::From;
-use std::cmp::PartialOrd;
 
 #[derive(Copy, Clone, PartialEq, Debug)]
-pub struct Vec3<T> {
-    pub x: T,
-    pub y: T,
-    pub z: T,
+pub struct Vec3 {
+    pub x: f64,
+    pub y: f64,
+    pub z: f64,
 }
 
-impl<T: Copy + PartialOrd> Vec3<T>
-where
-    f64: From<T>,
-{
+impl Vec3 {
     /// Create a new `Vec3`.
-    pub fn new(x: T, y: T, z: T) -> Vec3<T> {
+    pub fn new(x: f64, y: f64, z: f64) -> Vec3 {
         Vec3 { x, y, z }
     }
 
@@ -27,7 +22,7 @@ where
     ///
     /// Note: May cause loss of precision.
     pub fn l2_norm(&self) -> f64 {
-        (f64::from(self.x).powi(2) + f64::from(self.y).powi(2) + f64::from(self.z).powi(2)).sqrt()
+        (self.x.powi(2) + self.y.powi(2) + self.z.powi(2)).sqrt()
     }
 
     // TODO fix the other norms
@@ -60,11 +55,11 @@ where
     //    }
 }
 
-impl<T: Add<Output = T>> Add for Vec3<T> {
-    type Output = Vec3<T>;
+impl Add for Vec3 {
+    type Output = Vec3;
 
     /// Add two `Vec3`.
-    fn add(self, rhs: Vec3<T>) -> Vec3<T> {
+    fn add(self, rhs: Vec3) -> Vec3 {
         Vec3 {
             x: self.x + rhs.x,
             y: self.y + rhs.y,
@@ -73,22 +68,18 @@ impl<T: Add<Output = T>> Add for Vec3<T> {
     }
 }
 
-impl<T: Add<Output = T> + Copy> AddAssign for Vec3<T> {
+impl AddAssign for Vec3 {
     /// Add `rhs` to `self`.
-    fn add_assign(&mut self, rhs: Vec3<T>) {
-        *self = Vec3 {
-            x: self.x + rhs.x,
-            y: self.y + rhs.y,
-            z: self.z + rhs.z,
-        }
+    fn add_assign(&mut self, rhs: Vec3) {
+        *self = *self + rhs;
     }
 }
 
-impl<T: Sub<Output = T>> Sub for Vec3<T> {
-    type Output = Vec3<T>;
+impl Sub for Vec3 {
+    type Output = Vec3;
 
     /// Subtract two `Vec3`.
-    fn sub(self, rhs: Vec3<T>) -> Vec3<T> {
+    fn sub(self, rhs: Vec3) -> Vec3 {
         Vec3 {
             x: self.x - rhs.x,
             y: self.y - rhs.y,
@@ -97,31 +88,27 @@ impl<T: Sub<Output = T>> Sub for Vec3<T> {
     }
 }
 
-impl<T: Sub<Output = T> + Copy> SubAssign for Vec3<T> {
+impl SubAssign for Vec3 {
     /// Subtract `rhs` from `self`.
-    fn sub_assign(&mut self, rhs: Vec3<T>) {
-        *self = Vec3 {
-            x: self.x - rhs.x,
-            y: self.y - rhs.y,
-            z: self.z - rhs.z,
-        }
+    fn sub_assign(&mut self, rhs: Vec3) {
+        *self = *self - rhs;
     }
 }
 
-impl<T: Add<Output = T> + Mul<Output = T>> Mul<Vec3<T>> for Vec3<T> {
-    type Output = T;
+impl Mul<Vec3> for Vec3 {
+    type Output = f64;
 
     /// Compute dot product between two `Vec3`.
-    fn mul(self, rhs: Vec3<T>) -> T {
+    fn mul(self, rhs: Vec3) -> f64 {
         self.x * rhs.x + self.y * rhs.y + self.z * rhs.z
     }
 }
 
-impl<T: Mul<Output = T> + Copy> Mul<T> for Vec3<T> {
-    type Output = Vec3<T>;
+impl Mul<f64> for Vec3 {
+    type Output = Vec3;
 
     /// Multiply a `Vec3` by a scalar.
-    fn mul(self, rhs: T) -> Vec3<T> {
+    fn mul(self, rhs: f64) -> Vec3 {
         Vec3 {
             x: self.x * rhs,
             y: self.y * rhs,
@@ -130,22 +117,18 @@ impl<T: Mul<Output = T> + Copy> Mul<T> for Vec3<T> {
     }
 }
 
-impl<T: Mul<Output = T> + Copy> MulAssign<T> for Vec3<T> {
+impl MulAssign<f64> for Vec3 {
     /// Multiply a `Vec3` by a scalar.
-    fn mul_assign(&mut self, rhs: T) {
-        *self = Vec3 {
-            x: self.x * rhs,
-            y: self.y * rhs,
-            z: self.z * rhs,
-        }
+    fn mul_assign(&mut self, rhs: f64) {
+        *self = *self * rhs;
     }
 }
 
-impl<T: Div<Output = T> + Copy> Div<T> for Vec3<T> {
-    type Output = Vec3<T>;
+impl Div<f64> for Vec3 {
+    type Output = Vec3;
 
     /// Divide a `Vec3` by a scalar.
-    fn div(self, rhs: T) -> Vec3<T> {
+    fn div(self, rhs: f64) -> Vec3 {
         // TODO deal with divide-by-zero/NaN
         Vec3 {
             x: self.x / rhs,
@@ -155,109 +138,16 @@ impl<T: Div<Output = T> + Copy> Div<T> for Vec3<T> {
     }
 }
 
-impl<T: Div<Output = T> + Copy> DivAssign<T> for Vec3<T> {
+impl DivAssign<f64> for Vec3 {
     /// Divide a `Vec3` by a scalar.
-    fn div_assign(&mut self, rhs: T) {
-        // TODO deal with divide-by-zero/NaN
-        *self = Vec3 {
-            x: self.x / rhs,
-            y: self.y / rhs,
-            z: self.z / rhs,
-        }
+    fn div_assign(&mut self, rhs: f64) {
+        *self = *self / rhs;
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn equality_i32() {
-        let a = Vec3::new(1, 2, 3);
-        let b = Vec3::new(1, 2, 3);
-        assert_eq!(a, b);
-        let c = Vec3::new(3, 2, 1);
-        assert_ne!(a, c);
-    }
-
-    #[test]
-    fn add_i32() {
-        let a = Vec3::new(1, 1, 1);
-        let b = Vec3::new(1, 1, 1);
-        let c = Vec3::new(2, 2, 2);
-        assert_eq!(a + b, c);
-        assert_ne!(a + b, a);
-    }
-
-    #[test]
-    fn add_assign_i32() {
-        let mut a = Vec3::new(1, 1, 1);
-        a += Vec3::new(1, 1, 1);
-        let c = Vec3::new(2, 2, 2);
-        assert_eq!(a, c);
-    }
-
-    #[test]
-    fn sub_i32() {
-        let a = Vec3::new(1, 1, 1);
-        let b = Vec3::new(1, 1, 1);
-        let c = Vec3::new(0, 0, 0);
-        assert_eq!(a - b, c);
-        assert_ne!(a - b, a);
-    }
-
-    #[test]
-    fn sub_assign_i32() {
-        let mut a = Vec3::new(1, 1, 1);
-        a -= Vec3::new(1, 1, 1);
-        let c = Vec3::new(0, 0, 0);
-        assert_eq!(a, c);
-    }
-
-    #[test]
-    fn dot_i32() {
-        let a = Vec3::new(1, 1, 1);
-        let b = Vec3::new(1, 2, 3);
-        assert_eq!(a * b, 6);
-    }
-
-    #[test]
-    fn mul_scalar_i32() {
-        let a = Vec3::new(1, 1, 1);
-        let b = Vec3::new(2, 2, 2);
-        assert_eq!(a * 2, b);
-    }
-
-    #[test]
-    fn mul_scalar_assign_i32() {
-        let mut a = Vec3::new(1, 1, 1);
-        a *= 2;
-        let b = Vec3::new(2, 2, 2);
-        assert_eq!(a, b);
-    }
-
-    #[test]
-    fn div_scalar_i32() {
-        let a = Vec3::new(1, 1, 1);
-        let b = Vec3::new(2, 2, 2);
-        assert_eq!(b / 2, a);
-    }
-
-    #[test]
-    fn div_scalar_assign_i32() {
-        let mut a = Vec3::new(2, 2, 2);
-        a /= 2;
-        let b = Vec3::new(1, 1, 1);
-        assert_eq!(a, b);
-    }
-
-    #[test]
-    fn magnitude_i32() {
-        let a = Vec3::new(2, 2, 2);
-        let val: f64 = 2.0;
-        let expected = (val.powi(2) + val.powi(2) + val.powi(2)).sqrt();
-        assert_eq!(a.magnitude(), expected);
-    }
 
     #[test]
     fn equality_f64() {
