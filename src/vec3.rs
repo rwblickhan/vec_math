@@ -19,10 +19,13 @@ impl Vec3 {
     }
 
     /// Compute l<sub>2</sub> norm.
-    ///
-    /// Note: May cause loss of precision.
     pub fn l2_norm(&self) -> f64 {
         (self.x.powi(2) + self.y.powi(2) + self.z.powi(2)).sqrt()
+    }
+
+    /// Return a normalized vector in the direction of the given `Vec3`.
+    pub fn normalize(self) -> Vec3 {
+        self / self.magnitude()
     }
 
     // TODO fix the other norms
@@ -235,5 +238,11 @@ mod tests {
         let val: f64 = 2.0;
         let expected = (val.powi(2) + val.powi(2) + val.powi(2)).sqrt();
         assert_eq!(a.magnitude(), expected);
+    }
+
+    #[test]
+    fn normalize_f64() {
+        let a = Vec3::new(3.0, 3.0, 3.0);
+        assert_eq!(a.normalize(), a / a.magnitude());
     }
 }
